@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <random>
 #include <conio.h>
 #include <ctime>
 
@@ -7,76 +8,104 @@ using namespace std;
 
 
 
+
+
 class snake
 {
 	const int wight = 40, hight = 20;
 	int x, y, fruX, fruY, score;
+
 	bool pash = false;
 public:
-	enum dre { stop,UP, DOWN,LEFT,RIGHT } dir;
+	enum class dre { stop = 0,UP, DOWN,LEFT,RIGHT } dir = dre::stop;
 	int GameOver = false;
 
 	void draw();
 	void drawWin();
 	void setup();
-	void input();
 	void logic();
 
 };
 
 void snake::logic()
 {
-	switch (dir)
-	{
-	case UP: y--;
-		break;
-	case DOWN:y++;
-		break;
-	case LEFT: x--;
-		break;
-	case RIGHT: x++;
-		break;
+	
+	
 
-	};
+		switch (_getch())
+		{
+		case 'w': dir = dre::UP;
+			break;
+		case 's': dir = dre::DOWN;
+			break;
+		case 'a': dir = dre::LEFT;
+			break;
+		case 'd': dir = dre::RIGHT;
+			break;
+		case 'x': GameOver = true;
+			break;
+		default: dir = dre::stop;
+			break;
+		};
 
-	if (x > wight - 3 || x<1 || y>hight - 2 || y < 1) GameOver = true;
+		switch (dir)
+		{
+		case dre::UP: y--;
+			break;
+		case dre::DOWN:y++;
+			break;
+		case dre::LEFT: x--;
+			break;
+		case dre::RIGHT: x++;
+			break;
 
-	if (x == fruX && y == fruY)
-	{
-		score += 10;
-		srand(time(NULL));
-		fruX = (rand() % wight - 2);
-		srand(time(NULL));
-		fruY = (rand() % hight - 2);
-	};
+		};
+
+		if (x > wight - 3 || x<1 || y>hight - 2 || y < 1) GameOver = true;
+		else;
+
+		if ((x == fruX) && (y == fruY))
+		{
+			score += 10;
+
+			random_device dev;
+			mt19937 rng(dev());
+			uniform_int_distribution<mt19937::result_type> dist6(1, hight);
+			fruX = dist6(rng);
+
+			random_device dev2;
+			mt19937 rng2(dev2());
+			uniform_int_distribution<mt19937::result_type> dist61(1, wight);
+			fruY = dist61(rng2);
+
+
+		};
+
+	
+	
+
 }
 
-void snake::input()
-{
-
-	switch (_getch())
-	{
-	case 'w': dir = UP;
-		break;
-	case 's': dir = DOWN;
-		break;
-	case 'a': dir = LEFT;
-		break;
-	case 'd': dir = RIGHT;
-		break;
-	case 'x': GameOver = true;
-		break;
-	};
-}
 
 void snake::setup()
 {
 	srand(time(NULL));
-	dir = stop;
+	dir = dre::stop;
 	x = wight / 2;
 	y = hight / 2;
-	fruX = (rand() % wight-2);
-	fruY = (rand() % hight-2);
+	{
+		random_device dev;
+		mt19937 rng(dev());
+		uniform_int_distribution<mt19937::result_type> dist6(1, hight);
+		fruX = dist6(rng);
+
+		random_device dev2;
+		mt19937 rng2(dev2());
+		uniform_int_distribution<mt19937::result_type> dist61(1, wight);
+		fruY = dist61(rng2);
+
+
+	};
 }
 
 void snake::drawWin()
@@ -160,12 +189,11 @@ int main()
 	snake a;
 	
 	
-		a.setup();
 		a.draw();
+		a.setup();
 		while (!a.GameOver)
 		{
 			a.drawWin();
-			a.input();
 			a.logic();
 		}
 		system("cls");
